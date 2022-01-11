@@ -32,6 +32,10 @@ def check(word, answer):
 
     return result
 
+def make_game(answer):
+    def checker(guess):
+        return check(guess, answer)
+    return checker
 
 def pp(word, mask):
     s = ''
@@ -74,12 +78,12 @@ def possible(word, guess, mask):
             return False
     return True
 
-def solve(answer):
+def solve(checker):
     goodlist = wordlist
     guesses = 0
     while len(goodlist) > 0:
         guess = random.choice(goodlist)
-        mask = check(guess, answer)
+        mask = checker(guess)
         goodlist = [word for word in goodlist if possible(word, guess, mask)]
         pp(guess, mask)
         guesses += 1
@@ -89,7 +93,8 @@ guesses = 0
 successes = 0
 for _ in range(100):
     answer = random.choice(wordlist)
-    g = solve(answer)
+    checker = make_game(answer)
+    g = solve(checker)
     if g <= 6:
         guesses += g
         successes += 1

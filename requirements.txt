@@ -1,6 +1,1 @@
-colorama==0.4.4
-commonmark==0.9.1
-dataclasses==0.8
-Pygments==2.11.2
 rich==11.0.0
-typing-extensions==4.0.1
