@@ -1,12 +1,11 @@
 import random
 from collections import defaultdict
+
 from rich import print
 
-answer = 'query'
+from wordlist import read_wordlist
 
-def read_wordlist(path):
-    with open(path) as f:
-        return [line.rstrip() for line in f.readlines()]
+answer = 'query'
 
 wordlist = read_wordlist('wordlist')
 
