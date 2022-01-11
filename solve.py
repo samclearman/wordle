@@ -59,6 +59,8 @@ def possible(word, guess, mask):
             g_bounds_lower[g[i]] += 1
     for i in range(len(w)):
         if mask[i] == 1:
+            if w[i] == g[i]:
+                return False
             g_bounds_lower[g[i]] += 1
         elif mask[i] == 0:
             g_bounds_upper[g[i]] = g_bounds_lower[g[i]]
