@@ -23,5 +23,15 @@ for l in 'abcdefghijklmnopqrstuvwxyz':
 
 for f, l in reversed(sorted(lines)):
     print(l)
-    
 
+scored = []
+for word in all_words:
+    score = 0
+    for i in range(len(word)):
+        score += positions[word[i]][i]
+    scored.append((score, word))
+
+print('\n')
+print('Top ten words:')
+for score, word in list(reversed(sorted(scored)))[:10]:
+    print(f'{word} ({score})')
