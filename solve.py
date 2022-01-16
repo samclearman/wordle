@@ -4,6 +4,7 @@ from collections import defaultdict
 from rich import print
 
 from wordlist import read_wordlist
+from wordbag import wordbag
 
 answer = 'query'
 
@@ -47,43 +48,13 @@ def pp(word, mask):
             s += word[i]
     print(s)
 
-def possible(word, guess, mask):
-    if word == guess:
-        return False
-    w = [l for l in word]
-    g = [l for l in guess]
-    w_counts = defaultdict(int)
-    g_bounds_lower = defaultdict(int)
-    g_bounds_upper = {}
-    for i in range(len(w)):
-        if mask[i] == 2:
-            if w[i] != g[i]:
-                return False
-            g_bounds_lower[g[i]] += 1
-    for i in range(len(w)):
-        if mask[i] == 1:
-            if w[i] == g[i]:
-                return False
-            g_bounds_lower[g[i]] += 1
-        elif mask[i] == 0:
-            g_bounds_upper[g[i]] = g_bounds_lower[g[i]]
-    for i in range(len(w)):
-        w_counts[w[i]] += 1
-    for l, b in g_bounds_lower.items():
-        if w_counts[l] < b:
-            return False
-    for l, b in g_bounds_upper.items():
-        if w_counts[l] > b:
-            return False
-    return True
-
 def solve(checker):
-    goodlist = wordlist
+    prune, remainder = wordbag(wordlist)
     guesses = 0
-    while len(goodlist) > 0:
-        guess = random.choice(goodlist)
+    while len(remainder()) > 0:
+        guess = random.choice(remainder())
         mask = checker(guess)
-        goodlist = [word for word in goodlist if possible(word, guess, mask)]
+        prune(guess, mask)
         pp(guess, mask)
         guesses += 1
     return guesses
