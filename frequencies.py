@@ -66,42 +66,44 @@ def all_masks(guess):
     return masks
 
 # @modal.function
-def cut_score(guess):
-    scores = []
-    for mask in all_masks(guess):
-        prune, remainder = wordbag(common_words)
-        prune(guess, mask)
-        scores.append(len(remainder()))
-    return max(scores), guess
+# def cut_score(guess):
+#     scores = []
+#     for mask in all_masks(guess):
+#         prune, remainder = wordbag(common_words)
+#         prune(guess, mask)
+#         scores.append(len(remainder()))
+#     return max(scores), guess
 
 # this could take a while
-cut_scored = []
+# cut_scored = []
 # with modal.run():
-scored = cut_score.map(all_words)
-for score, word in scored:
-    all_scores[word]['cut'] = score
-    cut_scored.append((score, word))
+# scored = cut_score.map(all_words)
+# for score, word in scored:
+#     all_scores[word]['cut'] = score
+#     cut_scored.append((score, word))
         
-for word in all_words:
-    score = cut_score(word)
-    all_scores[word]['cut'] = score
-    cut_scored.append((score, word))
-    print(word, score)
+# for word in all_words:
+#     score = cut_score(word)
+#     all_scores[word]['cut'] = score
+#     cut_scored.append((score, word))
+#     print(word, score)
 
 print('\n')
 print('Top ten words by positional score:')
 for score, word in list(reversed(sorted(pos_scored)))[:10]:
-    print(f'{word} ({score}, {all_scores[word]["absolute"]}, {all_scores[word]["cut"]})')
+    # print(f'{word} ({score}, {all_scores[word]["absolute"]}, {all_scores[word]["cut"]})')
+    print(f'{word} ({score}, {all_scores[word]["absolute"]})')
 
 print('\n')
 print('Top ten words by absolute score:')
 for score, word in list(reversed(sorted(abs_scored)))[:10]:
-    print(f'{word} ({score}, {all_scores[word]["positional"]}, {cut_score(word)}, {all_scores[word]["cut"]})')
+    # print(f'{word} ({score}, {all_scores[word]["positional"]}, {cut_score(word)}, {all_scores[word]["cut"]})')
+    print(f'{word} ({score}, {all_scores[word]["positional"]})')
 
-print('\n')
-print('Top ten words by cut score:')
-for score, word in list(sorted(cut_scored))[:10]:
-    print(f'{word} ({score}, {all_scores[word]["absolute"]}, {all_scores[word]["positional"]})') 
+# print('\n')
+# print('Top ten words by cut score:')
+# for score, word in list(sorted(cut_scored))[:10]:
+#     print(f'{word} ({score}, {all_scores[word]["absolute"]}, {all_scores[word]["positional"]})') 
 def freq_by_position():
     all_words = read_wordlist('wordlist')
     common_words = all_words[:all_words.index('aahed')]
