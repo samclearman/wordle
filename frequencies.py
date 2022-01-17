@@ -139,22 +139,22 @@ def freq_by_position():
     for score, word in list(reversed(sorted(scored)))[:10]:
         print(f'{word} ({score})')
 
-def freq_by_letter():
-    all_words = read_wordlist('wordlist')
-    common_words = all_words[:all_words.index('aahed')]
+# def freq_by_letter():
+#     all_words = read_wordlist('wordlist')
+#     common_words = all_words[:all_words.index('aahed')]
 
-    frequencies = defaultdict(int)
-    for l in 'abcdefghijklmnopqrstuvwxyz':
-        count = 0
-        for word in common_words:
-            if l in word:
-                count += 1
-        frequencies[l] = count
+#     frequencies = defaultdict(int)
+#     for l in 'abcdefghijklmnopqrstuvwxyz':
+#         count = 0
+#         for word in common_words:
+#             if l in word:
+#                 count += 1
+#         frequencies[l] = count
 
-    print(frequencies)
+#     print(frequencies)
 
-    sorted_freq = dict(sorted(frequencies.items(), key=lambda item: item[1]))
-    print(sorted_freq)
-    # {'j': 27, 'q': 29, 'z': 35, 'x': 37, 'v': 149, 'w': 194, 'k': 202, 'f': 207, 'b': 267, 'm': 298, 'g': 300, 'p': 346, 'd': 370, 'h': 379, 'y': 417, 'c': 448, 'u': 457, 'n': 550, 's': 618, 'i': 647, 'l': 648, 't': 667, 'o': 673, 'r': 837, 'a': 909, 'e': 1056}
-    # earot -> orate
-freq_by_letter()
+#     sorted_freq = dict(sorted(frequencies.items(), key=lambda item: item[1]))
+#     print(sorted_freq)
+#     # {'j': 27, 'q': 29, 'z': 35, 'x': 37, 'v': 149, 'w': 194, 'k': 202, 'f': 207, 'b': 267, 'm': 298, 'g': 300, 'p': 346, 'd': 370, 'h': 379, 'y': 417, 'c': 448, 'u': 457, 'n': 550, 's': 618, 'i': 647, 'l': 648, 't': 667, 'o': 673, 'r': 837, 'a': 909, 'e': 1056}
+#     # earot -> orate
+# freq_by_letter()
