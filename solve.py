@@ -97,6 +97,10 @@ def solve(checker):
 # Solved 2040 / 2315 words
 # Average score: 4.434313725490196
 
+# start w/ highest pos score
+# Solved 96 / 103 words
+# Average score: 4.291666666666667
+
 guesses = 0
 successes = 0
 total = 0
