@@ -92,13 +92,13 @@ print('\n')
 print('Top ten words by positional score:')
 for score, word in list(reversed(sorted(pos_scored)))[:10]:
     # print(f'{word} ({score}, {all_scores[word]["absolute"]}, {all_scores[word]["cut"]})')
-    print(f'{word} ({score}, {all_scores[word]["absolute"]})')
+    print(f'{word} (positional: {all_scores[word]["positional"]}, absolute: {all_scores[word]["absolute"]})')
 
 print('\n')
 print('Top ten words by absolute score:')
 for score, word in list(reversed(sorted(abs_scored)))[:10]:
     # print(f'{word} ({score}, {all_scores[word]["positional"]}, {cut_score(word)}, {all_scores[word]["cut"]})')
-    print(f'{word} ({score}, {all_scores[word]["positional"]})')
+    print(f'{word} (positional: {all_scores[word]["positional"]}, absolute: {all_scores[word]["absolute"]})')
 
 # print('\n')
 # print('Top ten words by cut score:')
