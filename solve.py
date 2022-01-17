@@ -2,6 +2,7 @@ import random
 from collections import defaultdict
 
 from rich import print
+from frequencies import get_frequencies
 
 from wordlist import read_wordlist
 from wordbag import wordbag
@@ -48,11 +49,23 @@ def pp(word, mask):
             s += word[i]
     print(s)
 
+def next_guess(remainder):
+    pos_scored, abs_scored = get_frequencies(remainder)
+    print('pos_scored: ')
+    print(pos_scored)
+    print('abs_scored: ')
+    print(abs_scored)
+    # return random.choice(remainder)
+    chosen_word = list(reversed(sorted(pos_scored)))[0][1]
+    print('chosen word: ', chosen_word)
+    return chosen_word
+
 def solve(checker):
     prune, remainder = wordbag(wordlist)
     guesses = 0
     while len(remainder()) > 0:
-        guess = "orate" if guesses == 0 else random.choice(remainder())
+        guess = "soare" if guesses == 0 else next_guess(remainder())
+        print('guess is: ', guess)
         mask = checker(guess)
         prune(guess, mask)
         pp(guess, mask)
@@ -80,8 +93,13 @@ def solve(checker):
 # Solved 2074 / 2315 words
 # Average score: 4.490356798457087
 
+# start w/ "soare"
+# Solved 2040 / 2315 words
+# Average score: 4.434313725490196
+
 guesses = 0
 successes = 0
+total = 0
 all_words = read_wordlist('wordlist')
 common_words = all_words[:all_words.index('aahed')]
 for word in common_words:
@@ -90,6 +108,9 @@ for word in common_words:
     if g <= 6:
         guesses += g
         successes += 1
+    total += 1
     print(f'Solved {answer} in {g} guesses\n')
+    print(f'*Solved {successes} of {total} words')
+    print(f'*Average score: {guesses/successes}')
 print(f'Solved {successes} / {len(common_words)} words')
 print(f'Average score: {guesses/successes}')
