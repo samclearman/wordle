@@ -1,7 +1,9 @@
-# for now
 # def read_wordlist(path):
 #     with open(path) as f:
 #         return [line.rstrip() for line in f.readlines()]
+
+# For now we just keep the list in python source to make it work with Modal
+
 words = ['cigar',
     'rebut',
     'sissy',
@@ -12974,6 +12976,7 @@ words = ['cigar',
     'zygon',
     'zymes',
     'zymic']
+
 def read_wordlist(_):
     return words
 

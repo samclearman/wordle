@@ -2,7 +2,7 @@ import random
 from collections import defaultdict
 
 from rich import print
-from frequencies import get_frequencies
+from frequencies import get_frequencies, absolute_score, positional_score
 
 from wordlist import read_wordlist
 from wordbag import wordbag
@@ -50,7 +50,9 @@ def pp(word, mask):
     print(s)
 
 def next_guess(remainder):
-    pos_scored, abs_scored = get_frequencies(remainder)
+    absolute, positional = get_frequencies(remainder)
+    abs_scored = [(absolute_score(w, absolute), w) for w in remainder]
+    pos_scored = [(positional_score(w, positional), w) for w in remainder]
     print('pos_scored: ')
     print(pos_scored)
     print('abs_scored: ')

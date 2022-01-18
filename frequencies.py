@@ -1,146 +1,83 @@
 from collections import defaultdict
-from itertools import product
 
-# import modal
+import modal
 
 from wordlist import read_wordlist
 from wordbag import wordbag
+from cut_score import cut_score
 
 all_words = read_wordlist('wordlist')
 common_words = all_words[:all_words.index('aahed')]
 
-def get_frequencies(remainder, should_print=False):
-    possible_words = remainder if remainder else common_words
-    frequencies = defaultdict(int)
-    positions = defaultdict(lambda: [0,0,0,0,0])
-    for word in possible_words:
+def get_frequencies(words):
+    absolute = defaultdict(int)
+    positional = defaultdict(lambda: [0,0,0,0,0])
+    for word in words:
         for i in range(len(word)):
             l = word[i]
-            frequencies[l] += 1
-            positions[l][i] += 1
+            absolute[l] += 1
+            positional[l][i] += 1
 
     lines = []
     for l in 'abcdefghijklmnopqrstuvwxyz':
-        freq = int(frequencies[l] / 26)
+        freq = int(absolute[l] / 26)
         freqs = '{:>2}'.format(freq)
-        pos = [int(10 * (x / (sum(positions[l]) + 1))) for x in positions[l]]
+        pos = [int(10 * (x / (sum(positional[l]) + 1))) for x in positional[l]]
         poss = ' '.join([str(x) for x in pos])
-        lines.append((frequencies[l], f'{l}: {freqs} | {poss}'))
+        lines.append((absolute[l], f'{l}: {freqs} | {poss}'))
 
-    for f, l in reversed(sorted(lines)):
-        print(l)
+    return absolute, positional
 
+absolute, positional = get_frequencies(common_words)
+
+def absolute_score(word, frequencies=absolute):
+    score = 0
+    letters = set(word)
+    for l in letters:
+        score += frequencies[l]
+    return score
+
+def positional_score(word, frequencies=positional):
+    score = 0
+    for i in range(len(word)):
+        score += frequencies[word[i]][i]
+    return score
+
+if __name__ == '__main__':
     all_scores = defaultdict(dict)
+    abs_scores = [(absolute_score(w), w) for w in all_words]
+    for s, w in abs_scores:
+        all_scores[w]['absolute'] = s
+    pos_scores = [(positional_score(w), w) for w in all_words]
+    for s, w in pos_scores:
+        all_scores[w]['positional'] = s
 
-    pos_scored = []
-    for word in all_words:
-        score = 0
-        for i in range(len(word)):
-            score += positions[word[i]][i]
-        all_scores[word]['positional'] = score
-        pos_scored.append((score, word))
 
-    abs_scored = []
-    for word in all_words:
-        score = 0
-        letters = set(word)
-        for l in letters:
-            score += frequencies[l]
-        all_scores[word]['absolute'] = score
-        abs_scored.append((score, word))
-        
-    if not should_print:
-        return pos_scored, abs_scored
-    else:
-        print('\n')
-        print('Top ten words by positional score:')
-        for score, word in list(reversed(sorted(pos_scored)))[:10]:
-            # print(f'{word} ({score}, {all_scores[word]["absolute"]}, {all_scores[word]["cut"]})')
-            print(f'{word} (positional: {all_scores[word]["positional"]}, absolute: {all_scores[word]["absolute"]})')
+    # this could take a while
+    cut_scored = []
+    with modal.run():
+        scored = cut_score.map(all_words)
+        for score, word in scored:
+            all_scores[word]['cut'] = score
+            cut_scored.append((score, word))
 
-        print('\n')
-        print('Top ten words by absolute score:')
-        for score, word in list(reversed(sorted(abs_scored)))[:10]:
-            # print(f'{word} ({score}, {all_scores[word]["positional"]}, {cut_score(word)}, {all_scores[word]["cut"]})')
-            print(f'{word} (positional: {all_scores[word]["positional"]}, absolute: {all_scores[word]["absolute"]})')
+    def pp(word):
+        print(f'{word} (positional: {all_scores[word]["positional"]}, absolute: {all_scores[word]["absolute"]}, cut: {all_scores[word]["cut"]})')
 
-get_frequencies(all_words, should_print=True)
 
-def legal(guess, mask):
-    for l in set(guess):
-        seen_zero = False
-        for i in range(len(guess)):
-            if guess[i] == l and mask[i] == 1 and seen_zero:
-                return False
-            if guess[i] == l and mask[i] == 0:
-                seen_zero = True
-    return True
-
-def all_masks(guess):
-    masks = []
-    for m in product([0,1,2], repeat=5):
-        if legal(guess, m):
-            masks.append(m)
-    return masks
-
-# @modal.function
-# def cut_score(guess):
-#     scores = []
-#     for mask in all_masks(guess):
-#         prune, remainder = wordbag(common_words)
-#         prune(guess, mask)
-#         scores.append(len(remainder()))
-#     return max(scores), guess
-
-# this could take a while
-# cut_scored = []
-# with modal.run():
-# scored = cut_score.map(all_words)
-# for score, word in scored:
-#     all_scores[word]['cut'] = score
-#     cut_scored.append((score, word))
-        
-# for word in all_words:
-#     score = cut_score(word)
-#     all_scores[word]['cut'] = score
-#     cut_scored.append((score, word))
-#     print(word, score)
-
-# print('\n')
-# print('Top ten words by cut score:')
-# for score, word in list(sorted(cut_scored))[:10]:
-#     print(f'{word} ({score}, {all_scores[word]["absolute"]}, {all_scores[word]["positional"]})') 
-def freq_by_position():
-    all_words = read_wordlist('wordlist')
-    common_words = all_words[:all_words.index('aahed')]
-
-    frequencies = defaultdict(int)
-    positions = defaultdict(lambda: [0,0,0,0,0])
-    for word in common_words:
-        for i in range(len(word)):
-            l = word[i]
-            frequencies[l] += 1
-            positions[l][i] += 1
-
-    lines = []
-    for l in 'abcdefghijklmnopqrstuvwxyz':
-        freq = int(frequencies[l] / 26)
-        freqs = '{:>2}'.format(freq)
-        pos = [int(10 * (x / sum(positions[l]))) for x in positions[l]]
-        poss = ' '.join([str(x) for x in pos])
-        lines.append((frequencies[l], f'{l}: {freqs} | {poss}'))
-
-    for f, l in reversed(sorted(lines)):
-        print(l)
-
-    scored = []
-    for word in all_words:
-        score = 0
-        for i in range(len(word)):
-            score += positions[word[i]][i]
-        scored.append((score, word))
-
+    print('Top ten words by positional score:')
+    for score, word in list(reversed(sorted(pos_scores)))[:10]:
+        pp(word)
     print('\n')
-    print('Top ten words:')
-    for score, word in list(reversed(sorted(scored)))[:10]:
-        print(f'{word} ({score})')
+    print('Top ten words by absolute score:')
+    for score, word in list(reversed(sorted(abs_scores)))[:10]:
+        pp(word)
+    print('\n')
+    print('Top ten words by cut score:')
+    for score, word in list(sorted(cut_scored))[:10]:
+        pp(word)
+
+
+        
+
+
